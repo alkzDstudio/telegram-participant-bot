@@ -101,6 +101,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         parse_mode="MarkdownV2"
     )
 
+# Форматирует текст с участниками
+def get_status_text(chat_id: int) -> str:
+    state = STATE.get(chat_id, {})
+    date = state.get("date", "Не указано")
+    participants = state.get("participants", {})
+
+    # Сортируем по статусу
+    active: List[str] = []
+    unsure: List[str] = []
+    not_going: List[str] = []
+
+    for user_id, info in participants.items():
+        name = info["name"]
+        status = info["status"]
         if status == "active":
             active.append(name)
         elif status == "unsure":
