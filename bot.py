@@ -2,8 +2,8 @@
 
 import asyncio
 import logging
-from typing import Dict, List, Optional
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Message
+from typing import List, Dict, Optional
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 from database import init_db, save_state, load_state
 
@@ -11,7 +11,7 @@ from database import init_db, save_state, load_state
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Глобальное хранилище состояния (в реальном проекте — БД)
+# Глобальные переменные
 STATE: Dict[int, Dict] = {}
 
 # Статусы
@@ -31,7 +31,7 @@ def get_keyboard(chat_id: int) -> InlineKeyboardMarkup:
     """Создаёт клавиатуру с кнопками"""
     state = STATE.get(chat_id, {})
     user_id = state.get("user_id")
-    status = state.get("status", "active")  # Текущий статус пользователя
+    status = state.get("status", "active")
 
     buttons = [
         [InlineKeyboardButton("✅ Участвую", callback_data="action:active")],
@@ -76,7 +76,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if not data.startswith("action:"):
         return
 
-    action = data.split(":")[1]  # active, unsure, not_going
+    action = data.split(":")[1]
 
     # Получаем текущее состояние
     state = STATE.get(chat_id, {})
@@ -107,7 +107,6 @@ def get_status_text(chat_id: int) -> str:
     date = state.get("date", "Не указано")
     participants = state.get("participants", {})
 
-    # Сортируем по статусу
     active: List[str] = []
     unsure: List[str] = []
     not_going: List[str] = []
@@ -122,12 +121,10 @@ def get_status_text(chat_id: int) -> str:
         elif status == "not_going":
             not_going.append(name)
 
-    # Сортируем и нумеруем
     active = sorted(active)
     unsure = sorted(unsure)
     not_going = sorted(not_going)
 
-    # Форматируем текст
     lines = [
         f"#{date}-Кто-готов?",
         "################",
@@ -156,30 +153,31 @@ def get_status_text(chat_id: int) -> str:
 
     return "\n".join(lines)
 
-# Запуск бота
-def main() -> None:
+# ✅ ОСНОВНАЯ ФУНКЦИЯ — ИСПОЛЬЗУЙ asyncio.run()
+async def main() -> None:
     from dotenv import load_dotenv
     import os
 
     load_dotenv()
 
-    # Замени на свой токен!
     TOKEN = os.getenv("BOT_TOKEN")
     if not TOKEN:
         raise ValueError("BOT_TOKEN not found in .env file")
 
     # Инициализация БД
-    asyncio.run(init_db())
+    await init_db()
 
+    # Создаём приложение
     application = Application.builder().token(TOKEN).build()
 
     # Добавляем обработчики
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button_handler))
 
-    # Запуск бота
+    # Запускаем бота
     print("Бот запущен...")
-    application.run_polling()
+    await application.run_polling()
 
+# Запуск
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
