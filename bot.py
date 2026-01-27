@@ -7,31 +7,25 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
 from database import init_db, save_state, load_state
 
-# Настройка логирования
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
 
-# Глобальные переменные
 STATE: Dict[int, Dict] = {}
 
-# Статусы
 STATUS_ACTIVE = "active"
 STATUS_UNSURE = "unsure"
 STATUS_NOT_GOING = "not_going"
 
-# Статусы как строки (для кнопок)
 STATUS_MAP = {
     "active": "✅ Участвуют",
     "unsure": "❔ Не уверены",
     "not_going": "🚫 Не пойдут"
 }
 
-# Список кнопок
 def get_keyboard(chat_id: int) -> InlineKeyboardMarkup:
-    """Создаёт клавиатуру с кнопками"""
     state = STATE.get(chat_id, {})
     user_id = state.get("user_id")
     status = state.get("status", "active")
@@ -43,12 +37,10 @@ def get_keyboard(chat_id: int) -> InlineKeyboardMarkup:
     ]
     return InlineKeyboardMarkup(buttons)
 
-# Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     chat_id = update.effective_chat.id
     user = update.effective_user
 
-    # Загружаем состояние из БД
     participants = await load_state(chat_id)
     STATE[chat_id] = {
         "date": "Четверг-22-01-2026",
@@ -57,17 +49,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "user_name": user.full_name,
     }
 
-    # Отправляем сообщение
-    await update.message.reply_text(
-        "Выберите, как вы будете участвовать:"
-    )
+    await update.message.reply_text("Выберите, как вы будете участвовать:")
     await update.message.reply_text(
         text=get_status_text(chat_id),
         reply_markup=get_keyboard(chat_id),
         parse_mode="MarkdownV2"
     )
 
-# Обработка нажатий на кнопки
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
@@ -81,11 +69,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     action = data.split(":")[1]
 
-    # Получаем текущее состояние
     state = STATE.get(chat_id, {})
     participants = state.get("participants", {})
 
-    # Обновляем статус пользователя
     participants[user_id] = {
         "name": query.from_user.full_name,
         "status": action,
@@ -94,17 +80,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     STATE[chat_id]["participants"] = participants
 
-    # Сохраняем в БД
     await save_state(chat_id, participants)
 
-    # Обновляем сообщение
     await query.edit_message_text(
         text=get_status_text(chat_id),
         reply_markup=get_keyboard(chat_id),
         parse_mode="MarkdownV2"
     )
 
-# Форматирует текст с участниками
 def get_status_text(chat_id: int) -> str:
     state = STATE.get(chat_id, {})
     date = state.get("date", "Не указано")
@@ -156,7 +139,6 @@ def get_status_text(chat_id: int) -> str:
 
     return "\n".join(lines)
 
-# ✅ ОСНОВНАЯ ФУНКЦИЯ — ВСЕГДА ИСПОЛЬЗУЙ asyncio.run()
 async def main() -> None:
     from dotenv import load_dotenv
     import os
@@ -167,17 +149,14 @@ async def main() -> None:
     if not TOKEN:
         raise ValueError("BOT_TOKEN not found in .env file")
 
-    # Инициализация БД
     await init_db()
 
     # Создаём приложение через ApplicationBuilder
     application = ApplicationBuilder().token(TOKEN).build()
 
-    # Добавляем обработчики
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button_handler))
 
-    # Запускаем бота
     print("Бот запущен...")
     await application.run_polling()
 
