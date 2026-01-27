@@ -158,7 +158,7 @@ async def main() -> None:
     application.add_handler(CallbackQueryHandler(button_handler))
 
     print("Бот запущен...")
-    await application.run_polling()
+    application.run_polling()
 
 # ✅ ЗАПУСК — ВСЕГДА ТАК!
 if __name__ == "__main__":
