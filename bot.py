@@ -162,7 +162,7 @@ async def run_bot() -> None:
     app.add_handler(CallbackQueryHandler(button_handler))
     await app.initialize()
     await app.start()
-    await app.run_polling(stop_signals=None)
+    await app.run_polling()
 
     print("Бот запущен...")
     
