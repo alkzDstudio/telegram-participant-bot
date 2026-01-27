@@ -139,7 +139,7 @@ def get_status_text(chat_id: int) -> str:
 
     return "\n".join(lines)
 
-async def main() -> None:
+async def run_bot() -> None:
     from dotenv import load_dotenv
     import os
 
@@ -155,10 +155,18 @@ async def main() -> None:
     application = ApplicationBuilder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CallbackQueryHandler(button_handler))
+    application.add_handler(CallbackQueryHandler(button_handler)
+    
+    app.add_handler(MessageHandler(filters.TEXT, handle_message))
+    await app.initialize()
+    await app.start()
+    await app.run_polling(stop_signals=None)
 
     print("Бот запущен...")
-
-# ✅ ЗАПУСК — ВСЕГДА ТАК!
+    
+async def main():
+    await initialize()
+    await run_bot()
+    
 if __name__ == "__main__":
     asyncio.run(main())
