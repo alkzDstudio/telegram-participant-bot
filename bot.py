@@ -164,17 +164,14 @@ async def main() -> None:
     if not TOKEN:
         raise ValueError("BOT_TOKEN not found in .env file")
 
-    # Инициализация БД
+    # ✅ Должно быть async
     await init_db()
 
-    # Создаём приложение
     application = Application.builder().token(TOKEN).build()
 
-    # Добавляем обработчики
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button_handler))
 
-    # Запускаем бота
     print("Бот запущен...")
     await application.run_polling()
 
