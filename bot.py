@@ -157,9 +157,9 @@ async def run_bot() -> None:
     await init_db()
 
     # Создаём приложение через ApplicationBuilder
-    application = ApplicationBuilder().token(BOT_TOKEN).build()
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CallbackQueryHandler(button_handler))
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(button_handler))
     await app.initialize()
     await app.start()
     await app.run_polling(stop_signals=None)
