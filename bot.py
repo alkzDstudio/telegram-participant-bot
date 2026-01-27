@@ -150,23 +150,32 @@ async def run_bot() -> None:
     from telegram import Bot
     from telegram.error import InvalidToken
 
-    load_dotenv()  # Загружаем переменные из .env
+    load_dotenv()  # ✅ Обязательно!
 
     TOKEN = os.getenv("BOT_TOKEN")
     if not TOKEN:
         raise ValueError("BOT_TOKEN не найден в файле .env")
 
+    try:
+        bot = Bot(token=TOKEN)
+        me = await bot.get_me()
+        print(f"✅ Бот успешно подключён: @{me.username}")
+    except InvalidToken:
+        raise ValueError("❌ Неверный токен. Проверьте, что он правильный и не устарел.")
+    except Exception as e:
+        raise ValueError(f"❌ Ошибка при проверке токена: {e}")
+
     await init_db()
 
-    # Создаём приложение через ApplicationBuilder
-    app = Application.builder().token("BOT_TOKEN").build()
+    app = ApplicationBuilder().token(TOKEN).build()
+
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(button_handler))
+
+    print("Бот запущен...")
     await app.initialize()
     await app.start()
     await app.run_polling(stop_signals=None)
-
-    print("Бот запущен...")
     
 async def main():
     await initialize()
