@@ -107,7 +107,7 @@ def get_status_text(chat_id: int) -> str:
     date = state.get("date", "Не указано")
     participants = state.get("participants", {})
 
-    # Списки участников
+    # Сортируем по статусу
     active: List[str] = []
     unsure: List[str] = []
     not_going: List[str] = []
