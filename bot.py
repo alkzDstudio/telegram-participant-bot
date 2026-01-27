@@ -149,13 +149,14 @@ async def run_bot() -> None:
     import os
     from telegram import Bot
     from telegram.error import InvalidToken
+    from aiogram import Bot, Dispatcher, types
 
     load_dotenv()  # ✅ Обязательно!
 
     TOKEN = os.getenv("BOT_TOKEN")
     if not TOKEN:
         raise ValueError("BOT_TOKEN не найден в файле .env")
-
+    
     try:
         bot = Bot(token=TOKEN)
         me = await bot.get_me()
@@ -166,16 +167,16 @@ async def run_bot() -> None:
         raise ValueError(f"❌ Ошибка при проверке токена: {e}")
 
     await init_db()
-
+    dp = Dispatcher()
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(button_handler))
 
-    print("Бот запущен...")
-    await app.initialize()
-    await app.start()
-    await app.run_polling(stop_signals=None)
+    print("Бот запущен...")    
+    task = asyncio.create_task(stop_polling_after(dp, 30))
+    await dp.start_polling(app)
+    await task
     
 async def main():
     await initialize()
