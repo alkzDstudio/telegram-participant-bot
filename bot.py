@@ -153,7 +153,7 @@ def get_status_text(chat_id: int) -> str:
 
     return "\n".join(lines)
 
-# ✅ ОСНОВНАЯ ФУНКЦИЯ — ИСПОЛЬЗУЙ asyncio.run()
+# ✅ ОСНОВНАЯ ФУНКЦИЯ — ВСЕГДА ИСПОЛЬЗУЙ asyncio.run()
 async def main() -> None:
     from dotenv import load_dotenv
     import os
@@ -178,6 +178,6 @@ async def main() -> None:
     print("Бот запущен...")
     await application.run_polling()
 
-# Запуск
+# ✅ ЗАПУСК — ВСЕГДА ТАК!
 if __name__ == "__main__":
     asyncio.run(main())
