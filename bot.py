@@ -146,10 +146,17 @@ async def main() -> None:
     if not TOKEN:
         raise ValueError("BOT_TOKEN not found in .env file")
 
+    # 🔥 Проверка версии
+    import pkg_resources
+    try:
+        version = pkg_resources.get_distribution("python-telegram-bot").version
+        print(f"Python-Telegram-Bot version: {version}")
+    except Exception as e:
+        print(f"Error checking version: {e}")
+
     print("Starting DB init...")
     await init_db()
 
-    # ✅ Используем application.run(), а не run_polling()
     application = Application.builder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
