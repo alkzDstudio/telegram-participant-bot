@@ -146,16 +146,17 @@ async def main() -> None:
     if not TOKEN:
         raise ValueError("BOT_TOKEN not found in .env file")
 
-    print("Starting DB init...")  # 🔥
-    await init_db()  # ✅
+    print("Starting DB init...")
+    await init_db()
 
+    # ✅ Используем application.run(), а не run_polling()
     application = Application.builder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button_handler))
 
     print("Бот запущен...")
-    await application.run_polling()
+    await application.run()
 
 if __name__ == "__main__":
     asyncio.run(main())
