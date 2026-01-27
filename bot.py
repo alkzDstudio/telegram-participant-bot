@@ -157,7 +157,6 @@ async def main() -> None:
     import os
     from telegram import Bot
     from telegram.error import InvalidToken
-    from aiogram import Bot, Dispatcher, types
 
     load_dotenv()  # ✅ Обязательно!
 
@@ -175,28 +174,20 @@ async def main() -> None:
         raise ValueError(f"❌ Ошибка при проверке токена: {e}")
 
     await init_db()
-    dp = Dispatcher()
+    
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(button_handler))
 
     print("Бот запущен...")    
-    task = asyncio.create_task(stop_polling_after(dp, 30))
-    await dp.start_polling(app)
-    await task
-
-@dp.shutdown()
-async def do_stuff():
-    logger.info("Doing final stuff...")
-    await asyncio.sleep(60)
-    logger.info("Done")
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
+    # run until it receives a stop signal
+    await app.updater.stop()
+    await app.stop()
+    await app.shutdown()
     
 if __name__ == "__main__":
-    loop = asyncio.new_event_loop()
-
-    # start polling with timeout
-    loop.run_until_complete(main())
-
-    # start another task in the loop, while it runs, dispatcher proceeds to handle updates
-    loop.run_until_complete(do_stuff())
+    asyncio.run(main())
