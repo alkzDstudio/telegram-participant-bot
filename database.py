@@ -4,8 +4,7 @@ import asyncio
 DB_PATH = "participants.db"
 
 async def init_db():
-    """Инициализирует базу данных"""
-    async with aiosqlite.connect(DB_PATH) as db:
+    async with aiosqlite.connect("participants.db") as db:
         await db.execute("""
             CREATE TABLE IF NOT EXISTS participants (
                 chat_id INTEGER,
