@@ -41,6 +41,14 @@ def get_keyboard(chat_id: int) -> InlineKeyboardMarkup:
 async def initialize():
     # Set up resources
     pass
+
+async def stop_polling_after(dispatcher: Dispatcher, timeout: float):
+    await asyncio.sleep(timeout)
+    logger.info("Stop dispatcher polling.")
+    try:
+        await dispatcher.stop_polling()
+    except RuntimeError as e:
+        logger.info(f"Stopping polling failed. Error: {e}")
     
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     chat_id = update.effective_chat.id
@@ -144,7 +152,7 @@ def get_status_text(chat_id: int) -> str:
 
     return "\n".join(lines)
 
-async def run_bot() -> None:
+async def main() -> None:
     from dotenv import load_dotenv
     import os
     from telegram import Bot
@@ -177,10 +185,18 @@ async def run_bot() -> None:
     task = asyncio.create_task(stop_polling_after(dp, 30))
     await dp.start_polling(app)
     await task
-    
-async def main():
-    await initialize()
-    await run_bot()
+
+@dp.shutdown()
+async def do_stuff():
+    logger.info("Doing final stuff...")
+    await asyncio.sleep(60)
+    logger.info("Done")
     
 if __name__ == "__main__":
-    asyncio.run(main())
+    loop = asyncio.new_event_loop()
+
+    # start polling with timeout
+    loop.run_until_complete(main())
+
+    # start another task in the loop, while it runs, dispatcher proceeds to handle updates
+    loop.run_until_complete(do_stuff())
