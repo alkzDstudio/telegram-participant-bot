@@ -150,14 +150,14 @@ async def run_bot() -> None:
 
     load_dotenv()
 
-    BOT_TOKEN = os.getenv("BOT_TOKEN")
-    if not BOT_TOKEN:
+    TOKEN = os.getenv("BOT_TOKEN")
+    if not TOKEN:
         raise ValueError("BOT_TOKEN not found in .env file")
 
     await init_db()
 
     # Создаём приложение через ApplicationBuilder
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(button_handler))
     await app.initialize()
