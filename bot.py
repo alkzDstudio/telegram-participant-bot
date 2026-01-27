@@ -4,7 +4,7 @@ import asyncio
 import logging
 from typing import List, Dict, Optional
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes, Dispatcher
 from telegram.ext import Application, MessageHandler, filters
 from database import init_db, save_state, load_state
 
