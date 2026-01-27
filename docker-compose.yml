@@ -1,0 +1,19 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - db
+
+  db:
+    image: sqlite:latest
+    volumes:
+      - ./data/participants.db:/data/participants.db
+    command: ["sqlite3", "/data/participants.db", "CREATE TABLE IF NOT EXISTS dummy (id INTEGER);"]
