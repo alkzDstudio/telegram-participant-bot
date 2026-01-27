@@ -5,6 +5,7 @@ import logging
 from typing import List, Dict, Optional
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
+from telegram.ext import Application, MessageHandler, filters
 from database import init_db, save_state, load_state
 
 logging.basicConfig(
@@ -37,6 +38,10 @@ def get_keyboard(chat_id: int) -> InlineKeyboardMarkup:
     ]
     return InlineKeyboardMarkup(buttons)
 
+async def initialize():
+    # Set up resources
+    pass
+    
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     chat_id = update.effective_chat.id
     user = update.effective_user
