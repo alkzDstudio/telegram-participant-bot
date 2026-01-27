@@ -147,12 +147,24 @@ def get_status_text(chat_id: int) -> str:
 async def run_bot() -> None:
     from dotenv import load_dotenv
     import os
+    from telegram import Bot
+    from telegram.error import InvalidToken
 
-    load_dotenv()
+    load_dotenv()  # Загружаем переменные из .env
 
     TOKEN = os.getenv("BOT_TOKEN")
     if not TOKEN:
-        raise ValueError("BOT_TOKEN not found in .env file")
+        raise ValueError("BOT_TOKEN не найден в файле .env")
+
+    # Проверка токена
+    try:
+        bot = Bot(token=TOKEN)
+        me = await bot.get_me()
+        print(f"✅ Бот успешно подключён: @{me.username}")
+    except InvalidToken:
+        raise ValueError("❌ Неверный токен. Проверьте, что он правильный и не устарел.")
+    except Exception as e:
+        raise ValueError(f"❌ Ошибка при проверке токена: {e}")
 
     await init_db()
 
