@@ -1,4 +1,3 @@
-# Dockerfile
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -6,8 +5,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY . .
+# Копируем participants.json из data/
+COPY data/participants.json ./
 
-EXPOSE 8080
+COPY . .
 
 CMD ["python", "bot.py"]
