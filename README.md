@@ -10,7 +10,7 @@
 
 1. Запусти бота:
    ```bash
-   python main.py
+   python bot.py
 
 ### 1. Клонируй репозиторий
 
