@@ -5,8 +5,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# Копируем participants.json из data/
-COPY data/participants.json ./
+# Копируем .env
+COPY .env ./
 
 COPY . .
 
