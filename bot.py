@@ -10,11 +10,8 @@ from dotenv import load_dotenv
 # Путь к файлу с участниками
 DATA_FILE = "participants.json"
 
-# Админ из .env
-ADMIN_ID = os.getenv("ADMIN_ID")
-if not ADMIN_ID:
-    raise ValueError("Переменная окружения ADMIN_ID не установлена!")
-ADMIN_ID = int(ADMIN_ID)
+# Админ
+ADMIN_ID = 301962277
 
 # Инициализация данных
 def load_data():
