@@ -8,10 +8,4 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data:/app/data
-
-  db:
-    image: sqlite:latest
-    volumes:
-      - ./data/participants.db:/data/participants.db
-    command: ["sqlite3", "/data/participants.db", "CREATE TABLE IF NOT EXISTS dummy (id INTEGER);"]
+      - ./app:/app/data
