@@ -11,7 +11,10 @@ from dotenv import load_dotenv
 DATA_FILE = "participants.json"
 
 # Админ из .env
-ADMIN_ID = int(os.getenv("ADMIN_ID"))
+ADMIN_ID = os.getenv("ADMIN_ID")
+if not ADMIN_ID:
+    raise ValueError("Переменная окружения ADMIN_ID не установлена!")
+ADMIN_ID = int(ADMIN_ID)
 
 # Инициализация данных
 def load_data():
@@ -135,7 +138,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         for key, event in events.items():
             date_str = event["date"]
-            row = [InlineKeyboardButton(f"🔹 {date_str}", callback_data=f"refresh_{key}")]
+            row = [InlineKeyboardButton(f"🔹 {date_str}", callback_data=f"join_{key}")]
             if is_admin(user_id, data):
                 row.append(InlineKeyboardButton("🗑 Удалить", callback_data=f"delete_{key}"))
             keyboard.append(row)
