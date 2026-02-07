@@ -9,8 +9,6 @@ services:
       - .env
     volumes:
       - ./data:/app/data
-    depends_on:
-      - db
 
   db:
     image: sqlite:latest
